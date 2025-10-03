@@ -4,6 +4,8 @@ from fastapi import APIRouter, Depends
 from sqlmodel import Session, select
 
 from api.db import get_session
+from api.ai.schemas import EmailMessageSchema
+from api.ai.services import generate_email_message
 from .models import ChatMessage, ChatMessagePayLoad, ChatMessageListItem
 router = APIRouter()
 
@@ -24,7 +26,9 @@ def chat_list_messages(session: Session = Depends(get_session)):
 
 # HTTP POST -> payload = {"message": "hello" } -> {"message": "hello", "id": 1 }
 # curl -X POST -d '{"message": "hello duniya"}' -H "Content-Type: application/json" http://localhost:8080/api/chats/
-@router.post("/", response_model=ChatMessageListItem )
+# curl -X POST -d '{"message": "hello duniya"}' -H "Content-Type: application/json" https://ai-agent-production-9d9e.up.railway.app/api/chats/
+# curl -X POST -d '{"message": "Give me reason why it id good to use docker in 100 words"}' -H "Content-Type: application/json" http://localhost:8080/api/chats/
+@router.post("/", response_model=EmailMessageSchema) 
 def chat_create_message(
     payload: ChatMessagePayLoad,
     session: Session = Depends(get_session),
@@ -33,5 +37,7 @@ def chat_create_message(
     obj = ChatMessage.model_validate(data) # dict -> sqlmodel
     session.add(obj)
     session.commit()
-    session.refresh(obj) # ensure id/primary key is added to the obj instance
-    return obj
+    # session.refresh(obj) # ensure id/primary key is added to the obj instance
+
+    response = generate_email_message(payload.message)
+    return response
