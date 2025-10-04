@@ -1,4 +1,4 @@
-from api.ai.llms import get_openai_llm, get_groq_llm
+from api.ai.llms import get_groq_llm
 from api.ai.schemas import EmailMessageSchema
 
 

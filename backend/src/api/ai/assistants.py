@@ -1,6 +1,6 @@
 
 
-from api.ai.llms import get_openai_llm
+from api.ai.llms import get_groq_llm
 
 
 from api.ai.tools import (
@@ -15,7 +15,7 @@ EMAIL_TOOLS = {
 
 
 def email_assistant(query:str):
-    llm_base = get_openai_llm()
+    llm_base = get_groq_llm()
     # llm = llm_base.bind_tools([send_me_email, get_unread_emails])
     llm = llm_base.bind_tools(list(EMAIL_TOOLS.values()))
 
