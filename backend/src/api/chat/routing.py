@@ -35,6 +35,8 @@ def chat_list_messages(session: Session = Depends(get_session)):
 # curl -X POST -d '{"message": "Give me reason why it id good to use docker in 100 words"}' -H "Content-Type: application/json" http://localhost:8080/api/chats/
 
 # curl -X POST -d '{"message": "Give me reason why it id good to use docker in 100 words"}' -H "Content-Type: application/json" https://ai-agent-production-9d9e.up.railway.app/api/chats/
+
+# curl -X POST -d '{"message": "Research what is the best type of food in different parts of the world and email me the results"}' -H "Content-Type: application/json" https://ai-agent-production-9d9e.up.railway.app/api/chats/
 @router.post("/", response_model=SupervisorMessageSchema) 
 def chat_create_message(
     payload: ChatMessagePayLoad,

@@ -11,7 +11,7 @@ from api.ai.tools import (
 
 EMAIL_TOOLS_LIST = [
     send_me_email,
-    get_unread_emails
+    get_unread_emails,
 ]
 
 

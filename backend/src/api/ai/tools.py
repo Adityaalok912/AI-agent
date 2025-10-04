@@ -7,7 +7,7 @@ from api.ai.services import generate_email_message
 
 
 @tool
-def research_email(query:str, config: RunnableConfig):
+def research_email(query:str):
     """
     Perform research based on the query
 
@@ -15,8 +15,8 @@ def research_email(query:str, config: RunnableConfig):
     - query: str - Topic of research
     """
     # print(config)
-    metadata = config.get('metadata')
-    add_field = metadata.get("additional_field")
+    # metadata = config.get('metadata')
+    # add_field = metadata.get("additional_field")
     # print('add_field', add_field)
     response = generate_email_message(query)
     msg = f"Subject {response.subject}:\nBody: {response.content}"
