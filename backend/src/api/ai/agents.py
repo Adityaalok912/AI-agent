@@ -49,9 +49,15 @@ def get_supervisor(checkpointer=None):
         agents=[email_agent, research_agent],
         model = llm,
          prompt=(
-            "You manage a research assistant and a"
-            "email inbox manager assistant. Assign work to them."
+           "You are a supervisor that manages two agents:\n"
+            "1. 'email_agent' — handles email reading, writing, and sending.\n"
+            "2. 'research_agent' — handles information gathering and research.\n\n"
+            "Your job: decide which agent should handle the user’s request.\n"
+            "You may use the 'research_email' tool if you specifically need to "
+            "research and generate an email response.\n"
+            "Otherwise, delegate tasks to the appropriate agent."
         ),
+        tools=[research_email],
        
     ).compile( checkpointer=checkpointer)
     return supe
