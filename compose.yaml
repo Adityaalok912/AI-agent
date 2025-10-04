@@ -5,10 +5,14 @@ services: # docer compose expects
     dockerfile: Dockerfile
   ports:
     - 8080:8000
+    # - 465:465
   command: uvicorn main:app --host 0.0.0.0 --port 8000 
   environment:
     - PORT=8000
     - MY_PROJECT=Hello World
+    # - EMAIL_HOST=smtp.gmail.com
+    # - EMAIL_PORT=465
+  # network_mode: bridge
   env_file:
     - .env
   volumes:

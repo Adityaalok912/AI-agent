@@ -4,5 +4,7 @@ requests
 sqlmodel
 psycopg[binary]
 langchain
+langgraph
 langchain-openai
 langchain-groq
+langgraph-supervisor

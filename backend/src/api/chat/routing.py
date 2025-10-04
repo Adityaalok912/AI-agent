@@ -1,13 +1,16 @@
+import uuid
 from typing import List
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
 from sqlmodel import Session, select
-
+from langgraph.checkpoint.memory import InMemorySaver
 from api.db import get_session
-from api.ai.schemas import EmailMessageSchema
+from api.ai.agents import get_supervisor
+from api.ai.schemas import SupervisorMessageSchema , EmailMessageSchema
 from api.ai.services import generate_email_message
 from .models import ChatMessage, ChatMessagePayLoad, ChatMessageListItem
 router = APIRouter()
+checkpointer = InMemorySaver()
 
 # /api/chats/
 @router.get("/")
@@ -26,9 +29,13 @@ def chat_list_messages(session: Session = Depends(get_session)):
 
 # HTTP POST -> payload = {"message": "hello" } -> {"message": "hello", "id": 1 }
 # curl -X POST -d '{"message": "hello duniya"}' -H "Content-Type: application/json" http://localhost:8080/api/chats/
+
 # curl -X POST -d '{"message": "hello duniya"}' -H "Content-Type: application/json" https://ai-agent-production-9d9e.up.railway.app/api/chats/
+
 # curl -X POST -d '{"message": "Give me reason why it id good to use docker in 100 words"}' -H "Content-Type: application/json" http://localhost:8080/api/chats/
-@router.post("/", response_model=EmailMessageSchema) 
+
+# curl -X POST -d '{"message": "Give me reason why it id good to use docker in 100 words"}' -H "Content-Type: application/json" https://ai-agent-production-9d9e.up.railway.app/api/chats/
+@router.post("/", response_model=SupervisorMessageSchema) 
 def chat_create_message(
     payload: ChatMessagePayLoad,
     session: Session = Depends(get_session),
@@ -39,5 +46,20 @@ def chat_create_message(
     session.commit()
     # session.refresh(obj) # ensure id/primary key is added to the obj instance
 
-    response = generate_email_message(payload.message)
-    return response
+    # response = generate_email_message(payload.message)
+    thread_id = uuid.uuid4()
+    supe = get_supervisor(checkpointer=checkpointer)
+    msg_data = {
+        "messages": [
+            {"role": "user",
+            "content": f"{payload.message}" 
+          },
+        ]
+    }
+    result = supe.invoke(msg_data, {"configurable": {"thread_id": thread_id}})
+    if not result:
+        raise HTTPException(status_code=400, detail="Error with supervisor")
+    messages = result.get("messages")
+    if not messages:
+        raise HTTPException(status_code=400, detail="Error with supervisor")
+    return messages[-1]
