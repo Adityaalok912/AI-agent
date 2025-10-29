@@ -6,10 +6,10 @@ from typing import Optional
 class Settings:
     # Database
     DATABASE_URL: str = os.getenv(
-        "DATABASE_URL",
+        "DATABASE_URL"
         # Production: e.g., "postgresql+psycopg://user:pass@host:5432/autoteamai"
         # Dev fallback:
-        "sqlite+aiosqlite:///./autoteamai.db",
+        # "sqlite+aiosqlite:///./autoteamai.db",
     )
 
 
