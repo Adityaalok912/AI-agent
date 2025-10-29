@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from sse_starlette.sse import EventSourceResponse
 from api.ai.core.message_bus import MessageBus
 from api.ai.core.orchestrator import Orchestrator
-from api.ai.agents.llm_client import MockLLMClient, OpenAIClient
+from api.ai.agents.llm_client import MockLLMClient, GeminiClient
 from api.config.settings import get_settings
 from api.db.database import AsyncSessionLocal
 from api.db import crud 
@@ -31,9 +31,9 @@ _settings = get_settings()
 _message_bus = MessageBus()
 def _get_llm_client():
 # Choose real provider if key present; fall back to Mock
-    if _settings.OPENAI_API_KEY:
-        return OpenAIClient(api_key=_settings.OPENAI_API_KEY,
-model=_settings.OPENAI_MODEL)
+    if _settings.GEMINI_API_KEY:
+        return GeminiClient(api_key=_settings.GEMINI_API_KEY,
+model=_settings.GEMINI_MODEL)
     return MockLLMClient()
 
 

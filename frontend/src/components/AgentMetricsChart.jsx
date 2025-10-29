@@ -5,10 +5,15 @@ import {
 export default function AgentMetricsChart({ metrics }) {
   if (!metrics || Object.keys(metrics).length === 0) return null;
 
-  const data = Object.entries(metrics).map(([agent, m]) => ({
-    name: agent,
-    duration: Number(m.duration.toFixed(2)),
-  }));
+  const data = Object.entries(metrics).map(([agent, m]) => {
+    // Ensure m.duration exists and is a valid number before processing
+    const duration = Number(m.duration);
+    return {
+      name: agent,
+      // Check if duration is a valid number, otherwise default to 0
+      duration: !isNaN(duration) ? Number(duration.toFixed(2)) : 0,
+    };
+  });
 
   return (
     <div className="rounded-xl bg-gradient-to-br from-white via-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 shadow-inner border border-slate-200 dark:border-slate-700 p-5">

@@ -14,8 +14,8 @@ class Settings:
 
 
     # OpenAI / Provider config (agents.llm_client.OpenAIClient)
-    OPENAI_API_KEY: Optional[str] = os.getenv("GEMINI_API_KEY")
-    OPENAI_MODEL: str = os.getenv("GEMINI_MODEL_NAME", "gemini-2.5-flash")
+    GEMINI_API_KEY: Optional[str] = os.getenv("GEMINI_API_KEY")
+    GEMINI_MODEL: str = os.getenv("GEMINI_MODEL_NAME", "gemini-2.5-flash")
 
 
     # App

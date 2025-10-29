@@ -37,7 +37,7 @@ class MockLLMClient(LLMClient):
 # =======================================
 # ✅ GEMINI CLIENT (Production Default)
 # =======================================
-class OpenAIClient(LLMClient):
+class GeminiClient(LLMClient):
     """
     Async Gemini API client using google-generativeai SDK.
     Make sure to install:
@@ -46,16 +46,18 @@ class OpenAIClient(LLMClient):
         export GEMINI_API_KEY="your_api_key"
     """
 
-    def __init__(self, api_key: Optional[str] = None, model: str = "gemini-2.5-flash"):
+    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
         import google.generativeai as genai
 
         self.api_key = api_key or os.getenv("GEMINI_API_KEY")
         if not self.api_key:
             raise ValueError("Missing GEMINI_API_KEY environment variable or provided api_key")
 
+        # Prioritize model from constructor, then ENV, then default
+        model_name = model or os.getenv("GEMINI_MODEL_NAME") or "gemini-1.5-flash"
         genai.configure(api_key=self.api_key)
-        self.model = genai.GenerativeModel(model)
-        logger.info(f"GeminiClient initialized with model: {model}")
+        self.model = genai.GenerativeModel(model_name)
+        logger.info(f"GeminiClient initialized with model: {model_name}")
 
     async def generate(self, prompt: str, system: Optional[str] = None, **kwargs) -> str:
         """
@@ -78,9 +80,9 @@ class OpenAIClient(LLMClient):
 
 
 # =======================================================
-# ❌ COMMENTED OUT: OPENAI CLIENT (LEGACY / OPTIONAL USE)
+#   OPENAI CLIENT 
 # =======================================================
-"""
+
 class OpenAIClient(LLMClient):
     def __init__(self, api_key: Optional[str] = None, model: str = "gpt-4o"):
         import openai
@@ -100,7 +102,7 @@ class OpenAIClient(LLMClient):
             return resp["choices"][0]["message"]["content"]
 
         return await loop.run_in_executor(None, _call)
-"""
+
 
 # ============================
 # Factory helper
@@ -114,7 +116,7 @@ def get_llm_client(provider: str = "gemini") -> LLMClient:
         return MockLLMClient()
     elif provider == "gemini":
         return GeminiClient()
-    # elif provider == "openai":
-    #     return OpenAIClient()
+    elif provider == "openai":
+        return OpenAIClient()
     else:
         raise ValueError(f"Unknown LLM provider: {provider}")
